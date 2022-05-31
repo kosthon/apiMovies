@@ -1,0 +1,19 @@
+{
+  "name": "apimovies",
+  "version": "1.0.0",
+  "description": "Proyecto para el curso practico de API REST con Javascript",
+  "main": "index.html",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/kosthon/apiMovies.git"
+  },
+  "author": "@kosthon",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/kosthon/apiMovies/issues"
+  },
+  "homepage": "https://github.com/kosthon/apiMovies#readme"
+}
