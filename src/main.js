@@ -1,5 +1,15 @@
 // Utils
-function printMovies(section, movies) {
+const callback = entries => {
+	entries.forEach(element => {
+		if (element.isIntersecting) {
+			element.target.setAttribute('src', element.target.dataset.img);
+		}
+	});
+};
+
+let observer = new IntersectionObserver(callback);
+
+function printMovies(section, movies, lazyLoad = false) {
 	section.innerHTML = '';
 
 	movies.forEach(movie => {
@@ -12,7 +22,14 @@ function printMovies(section, movies) {
 		const movieImg = document.createElement('img');
 		movieImg.classList.add('movie-img');
 		movieImg.setAttribute('alt', movie.title);
-		movieImg.setAttribute('src', 'https://image.tmdb.org/t/p/w300' + movie.poster_path);
+		movieImg.setAttribute(
+			lazyLoad ? 'data-img' : 'src',
+			'https://image.tmdb.org/t/p/w300' + movie.poster_path
+		);
+
+		if (lazyLoad) {
+			observer.observe(movieImg);
+		}
 
 		movieContainer.appendChild(movieImg);
 		section.appendChild(movieContainer);
@@ -56,7 +73,7 @@ async function getTrendingMoviesPreview() {
 	const {data} = await api('trending/movie/day');
 	const movies = data.results;
 
-	printMovies(trendingMoviesPreviewList, movies);
+	printMovies(trendingMoviesPreviewList, movies, true);
 }
 
 async function getCategoriesPreview() {
