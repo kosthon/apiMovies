@@ -1,3 +1,6 @@
+let pages = 1;
+let infiniteScroll;
+
 searchFormBtn.addEventListener('click', () => {
 	const valueInput = searchFormInput.value.trim();
 	location.hash = '#search=' + valueInput;
@@ -11,9 +14,14 @@ arrowBtn.addEventListener('click', () => {
 
 window.addEventListener('DOMContentLoaded', navigator, false);
 window.addEventListener('hashchange', navigator, false);
+window.addEventListener('scroll', infiniteScroll, false);
 
 function navigator() {
-	console.log(location);
+	if (infiniteScroll) {
+		console.log('Tiene infinteScroll algo');
+		window.removeEventListener('scroll', infiniteScroll, {passive: false});
+		infiniteScroll = undefined;
+	}
 	if (location.hash.startsWith('#trends')) {
 		trendsPage();
 	} else if (location.hash.startsWith('#search=')) {
@@ -27,6 +35,11 @@ function navigator() {
 	}
 
 	window.scrollTo(0, 0);
+
+	// Le asignamos al evento nuevamente lo que tenga la variable infiniteScroll que previamente en la navegación le asignamos un valor.
+	if (infiniteScroll) {
+		window.addEventListener('scroll', infiniteScroll, {passive: false});
+	}
 }
 
 function homePage() {
@@ -39,12 +52,14 @@ function homePage() {
 	headerTitle.classList.remove('inactive');
 	searchForm.classList.remove('inactive');
 	trendingPreviewSection.classList.remove('inactive');
+	likedMoviesSection.classList.remove('inactive');
 	categoriesPreviewSection.classList.remove('inactive');
 	genericSection.classList.add('inactive');
 	movieDetailSection.classList.add('inactive');
 
 	getTrendingMoviesPreview();
 	getCategoriesPreview();
+	getLikedMovies();
 }
 
 function categoriesPage() {
@@ -58,6 +73,7 @@ function categoriesPage() {
 	headerTitle.classList.add('inactive');
 	searchForm.classList.add('inactive');
 	trendingPreviewSection.classList.add('inactive');
+	likedMoviesSection.classList.add('inactive');
 	categoriesPreviewSection.classList.add('inactive');
 	genericSection.classList.remove('inactive');
 	movieDetailSection.classList.add('inactive');
@@ -66,6 +82,9 @@ function categoriesPage() {
 	const [categoryId, categoryName] = categoryInfo.split('-');
 	headerCategoryTitle.innerHTML = categoryName.replace('%20', ' ');
 	getMoviesByCategory(categoryId);
+
+	infiniteScroll = getPaginatedMoviesByCategory;
+	console.log(infiniteScroll);
 }
 
 function moviesDetailsPage() {
@@ -79,6 +98,7 @@ function moviesDetailsPage() {
 	headerTitle.classList.add('inactive');
 	searchForm.classList.add('inactive');
 	trendingPreviewSection.classList.add('inactive');
+	likedMoviesSection.classList.add('inactive');
 	categoriesPreviewSection.classList.add('inactive');
 	genericSection.classList.add('inactive');
 	movieDetailSection.classList.remove('inactive');
@@ -98,12 +118,14 @@ function searchPage() {
 	headerTitle.classList.add('inactive');
 	searchForm.classList.remove('inactive');
 	trendingPreviewSection.classList.add('inactive');
+	likedMoviesSection.classList.add('inactive');
 	categoriesPreviewSection.classList.add('inactive');
 	genericSection.classList.remove('inactive');
 	movieDetailSection.classList.add('inactive');
 
 	const [, query] = location.hash.split('=');
 	getMoviesBySearch(query);
+	infiniteScroll = getPaginatedMoviesBySearch;
 }
 
 function trendsPage() {
@@ -117,10 +139,29 @@ function trendsPage() {
 	headerTitle.classList.add('inactive');
 	searchForm.classList.add('inactive');
 	trendingPreviewSection.classList.add('inactive');
+	likedMoviesSection.classList.add('inactive');
 	categoriesPreviewSection.classList.add('inactive');
 	genericSection.classList.remove('inactive');
 	movieDetailSection.classList.add('inactive');
 
 	headerCategoryTitle.innerHTML = 'Tendencias';
 	getTrendingMovies();
+	infiniteScroll = getPaginatedTrendingMovies;
+}
+
+// Scroll Infinite Section
+function getPaginatedTrendingMovies() {
+	getPaginetedMovies('/trending/movie/day');
+}
+
+function getPaginatedMoviesByCategory() {
+	const [, categoryData] = location.hash.split('=');
+	const [categoryId] = categoryData.split('-');
+	getPaginetedMovies('/discover/movie', {categoryId});
+}
+
+function getPaginatedMoviesBySearch() {
+	const [_, undecodedQuery] = location.hash.split('=');
+	const query = decodeURI(undecodedQuery);
+	getPaginetedMovies('/search/movie', {undefined, query});
 }
