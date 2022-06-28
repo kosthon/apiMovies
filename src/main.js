@@ -33,7 +33,6 @@ function likedMoviesList() {
 
 function likeMovie(movie) {
 	const likedMovies = likedMoviesList();
-	console.log('likedMOvies', likedMovies);
 	if (likedMovies[movie.id]) {
 		likedMovies[movie.id] = undefined;
 	} else {
@@ -68,10 +67,6 @@ function printMovies(section, movies, {lazyLoad = false, clean = true} = {}) {
 				'src',
 				`https://via.placeholder.com/280x370/5c218a/ffffff?text=${movieImg.getAttribute('alt')}`
 			);
-			const movieTitle = document.createElement('span');
-			movieTitle.classList.add('movieTitle');
-			movieTitle.textContent = movieImg.getAttribute('alt');
-			movieContainer.appendChild(movieTitle);
 		});
 
 		const movieBtn = document.createElement('button');
@@ -200,11 +195,39 @@ async function getPaginetedMovies(endpoint, {categoryId, query} = {}) {
 	}
 }
 
+async function getStreamingList(idMovie) {
+	streamingContainer.innerHTML = '';
+
+	const {data} = await api('/movie/' + idMovie + '/watch/providers');
+	const movies = data.results;
+
+	if (movies.CL != undefined && Object.entries(movies).length != 0) {
+		movies.CL.flatrate.forEach(element => {
+			const itemStreaming = document.createElement('li');
+			const imgItemStreaming = document.createElement('img');
+
+			imgItemStreaming.setAttribute(
+				'src',
+				'https://image.tmdb.org/t/p/original' + element.logo_path
+			);
+			imgItemStreaming.setAttribute('alt', element.provider_name);
+
+			itemStreaming.classList.add('streaming--item');
+			imgItemStreaming.classList.add('streaming--img');
+
+			itemStreaming.appendChild(imgItemStreaming);
+			streamingContainer.appendChild(itemStreaming);
+		});
+	} else {
+		const notStreamingTitle = document.createElement('h2');
+		notStreamingTitle.innerText = 'Not available on streaming platforms.';
+		streamingContainer.appendChild(notStreamingTitle);
+	}
+}
+
 function getLikedMovies() {
 	const likedMovies = likedMoviesList();
 	const moviesArray = Object.values(likedMovies);
 
 	printMovies(likedMoviesContainer, moviesArray, {lazyLoad: true, clean: true});
-
-	console.log(likedMovies);
 }

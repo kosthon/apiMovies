@@ -18,7 +18,6 @@ window.addEventListener('scroll', infiniteScroll, false);
 
 function navigator() {
 	if (infiniteScroll) {
-		console.log('Tiene infinteScroll algo');
 		window.removeEventListener('scroll', infiniteScroll, {passive: false});
 		infiniteScroll = undefined;
 	}
@@ -84,7 +83,6 @@ function categoriesPage() {
 	getMoviesByCategory(categoryId);
 
 	infiniteScroll = getPaginatedMoviesByCategory;
-	console.log(infiniteScroll);
 }
 
 function moviesDetailsPage() {
@@ -105,6 +103,7 @@ function moviesDetailsPage() {
 
 	const [, movieId] = location.hash.split('=');
 	getMovieById(movieId);
+	getStreamingList(movieId);
 }
 
 function searchPage() {
