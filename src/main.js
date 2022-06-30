@@ -179,7 +179,12 @@ async function getReleatedMoviesByID(id) {
 
 async function getPaginetedMovies(endpoint, {categoryId, query} = {}) {
 	const {scrollTop, scrollHeight, clientHeight} = document.documentElement;
-	const isScrollBottom = scrollTop + clientHeight >= scrollHeight - 20;
+	const isScrollBottom = scrollTop + clientHeight >= scrollHeight - 50;
+
+	const alertaProv = document.createElement('div');
+	alertaProv.classList.add('alert');
+	alertaProv.innerText = isScrollBottom;
+	headerSection.appendChild(alertaProv);
 
 	if (isScrollBottom) {
 		pages++;
