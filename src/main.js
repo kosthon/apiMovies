@@ -184,11 +184,6 @@ async function getPaginetedMovies(endpoint, {categoryId, query} = {}) {
 	// const isScrollBottom = scrollTop + clientHeight >= scrollHeight - 50;
 	const isScrollBottom = clientHeight + Math.floor(windowScrollTop) >= scrollHeight - 40;
 
-	const alertaProv = document.createElement('div');
-	alertaProv.classList.add('alert');
-	alertaProv.innerText = isScrollBottom;
-	headerSection.appendChild(alertaProv);
-
 	if (isScrollBottom) {
 		pages++;
 		const {data} = await api(endpoint, {
